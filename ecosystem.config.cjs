@@ -5,7 +5,7 @@ const path = require("path");
 module.exports = {
   apps: [
     {
-      name: "back",
+      name: "front",
       script: "npm",
       args: "run prod",
     },
