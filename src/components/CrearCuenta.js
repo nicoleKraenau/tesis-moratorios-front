@@ -50,7 +50,8 @@ const CrearCuenta = () =>{
         function findEmail(){
           let found = false;
           usuarios.forEach(e => {
-              if(e.email = task.email) found = true;
+              if(e.email = task.email) found = false;
+              console.log('gggg')
           });
           return found;
         }
@@ -60,26 +61,33 @@ const CrearCuenta = () =>{
         const handleSubmit = async (e) => {
             e.preventDefault();
             setLoading(true);
-            if(task.contrasena !== "" && task.email !=="" && task.nombre !== "")
+            console.log('hola')
+            if(task.nombre !== "" && task.contrasena !== "" && task.email !=="")
             {
+              console.log('hola')
               if(!findEmail()){
+                console.log('hola11')
                 const response = await fetch(process.env.REACT_APP_API_URL + "/registrousuario", {
+                  
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify(task),
                 });
+                
                 const data =await response.json();
+               
               }
               else{
                 setAlert("El correo ya ha sido registrado. Intente con otro.");
                 setOpen(true);
+                
               }              
             }
             else{
               setAlert("Complete todos los campos.");
               setOpen(true);
             }
-             
+            
           };
 
           const action = (

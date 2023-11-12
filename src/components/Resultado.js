@@ -321,6 +321,7 @@ export default function Resultado(){
         } else{
           dia = fecha.getDate();
         }
+        
         const distrito = dataDistrito.find((item) => item.id_distrito === element.id_distrito);
         const motivo = dataMotivo.find((item) => item.id_motivo_prestamo === element.id_motivo);
         const usuario = dataUsuario.find((item) => item.id_usuario === element.id_usuario);
@@ -369,18 +370,27 @@ export default function Resultado(){
         setDNI(newValue);
       }
     }
+    function calcularPorcentaje(salario, edad) {
+      return -((salario * 0.10) + edad) - 140;
+    }
+    
 
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - clientes.length) : 0;
 
     const visibleRows = React.useMemo(
       () => {
         if (dni === '') {
+          const allClientes = stableSort(clientes, getComparator(order, orderBy));
+          const filtrados = allClientes.filter((cliente) => {
+            const edad = calcularEdad(cliente.fecha_nacimiento);
+            return edad < 27 && cliente.cantidad_propiedades < 2;
           // Si el campo de DNI está vacío, mostrar todos los registros
           return stableSort(clientes, getComparator(order, orderBy)).slice(
             page * rowsPerPage,
-            page * rowsPerPage + rowsPerPage
-          );
-        } else {
+            page * rowsPerPage + rowsPerPage)
+          });
+          return filtrados.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+        }else {
           // Si se ha ingresado un valor en el campo de DNI, filtrar los registros
           const filteredClientes = clientes.filter((cliente) =>
             cliente.dni.toLowerCase().includes(dni.toLowerCase())
@@ -392,7 +402,34 @@ export default function Resultado(){
           );
         }
       },[order, orderBy, page, rowsPerPage, clientes, dni],);
-
+      function calcularPorcentaje(salario, fechaNacimiento) {
+        const fechaNacimientoArray = fechaNacimiento.split('-');
+        const anioNacimiento = parseInt(fechaNacimientoArray[0], 10);
+        const mesNacimiento = parseInt(fechaNacimientoArray[1], 10);
+        const diaNacimiento = parseInt(fechaNacimientoArray[2], 10);
+      
+        const fechaActual = new Date();
+        const diaActual = fechaActual.getDate();
+        const mesActual = fechaActual.getMonth() + 1;
+        const anioActual = fechaActual.getFullYear();
+      
+        let edad = anioActual - anioNacimiento;
+      
+        // Ajustar la edad si aún no se ha alcanzado el cumpleaños de este año
+        if (mesActual < mesNacimiento || (mesActual === mesNacimiento && diaActual < diaNacimiento)) {
+          edad--;
+        }
+      
+        let porcentaje = (-((salario * 0.10) + edad) + 160);
+        // Limitar el porcentaje a un máximo de 100 si es mayor que 100
+        if (porcentaje > 100) {
+          porcentaje = 100;
+        }
+      
+        return porcentaje;
+      }
+      
+      
     return (dataLoaded && (
         <>
           <Navbar/>
@@ -443,7 +480,8 @@ export default function Resultado(){
                               <StyledTableCell >{cliente.id_distrito.nombre_distrito}</StyledTableCell>
                               <StyledTableCell >{cliente.salario}</StyledTableCell>
                               <StyledTableCell >{calcularEdad(cliente.fecha_nacimiento)}</StyledTableCell>
-                              <StyledTableCell >{cliente.deudas}</StyledTableCell>
+                              <StyledTableCell>{calcularPorcentaje(cliente.salario, cliente.fecha_nacimiento)}</StyledTableCell>
+
                             </StyledTableRow>
                           </React.Fragment>
                           <Modal

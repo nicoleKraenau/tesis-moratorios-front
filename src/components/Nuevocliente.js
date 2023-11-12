@@ -264,6 +264,8 @@ export default function NuevoCliente() {
         }else{          
           const updatedTask = { ...task};
           updatedTask.id_usuario = dataUsuario.find((item) => item.id_usuario === user.id);
+         console.log(dataUsuario, user)
+         
           if(dniDuplicado){
             setAlert("El DNI ya se ha registrado. Intente de nuevo"); handleOpen();
           }

@@ -107,51 +107,52 @@ export default function Dashboard(){
 
     const PieEstadoCivil =() => (
       <ResponsivePie
-          data={datacountClientsEstadoCivil} 
-          style={{ height: '300px' }}
-          margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
-          padAngle={0.7}
-          cornerRadius={3}
-          activeOuterRadiusOffset={8}
-          borderWidth={1}
-          borderColor={{
-              from: 'color',
-              modifiers: [['darker', 0.2 ]]
-          }}
-          arcLinkLabel="label"
-          arcLinkLabelsSkipAngle={10}
-          arcLinkLabelsTextColor="#333333"
-          arcLinkLabelsThickness={2}
-          arcLinkLabelsColor={{ from: 'color' }}
-          arcLabelsSkipAngle={10}
-          arcLabelsTextColor={{
-              from: 'color',
-              modifiers: [['darker', 2 ]]
-          }}
-          legends={[
-              {
-                  anchor: 'bottom',
-                  direction: 'row',
-                  justify: false,
-                  translateX: 0,
-                  translateY: 56,
-                  itemsSpacing: 0,
-                  itemWidth: 100,
-                  itemHeight: 18,
-                  itemTextColor: '#999',
-                  itemDirection: 'left-to-right',
-                  itemOpacity: 1,
-                  symbolSize: 18,
-                  symbolShape: 'circle',
-                  effects: [
-                      {
-                          on: 'hover',
-                          style: {itemTextColor: '#000'}
-                      }
-                  ]
-              }
-          ]}
-      />
+      data={datacountClientsEstadoCivil} 
+      
+      style={{ height: '300px' }}
+      margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
+      padAngle={0.7}
+      cornerRadius={3}
+      activeOuterRadiusOffset={8}
+      borderWidth={1}
+      borderColor={{
+          from: 'color',
+          modifiers: [['darker', 0.2 ]]
+      }}
+      arcLinkLabel="label"
+      arcLinkLabelsSkipAngle={10}
+      arcLinkLabelsTextColor="#333333"
+      arcLinkLabelsThickness={2}
+      arcLinkLabelsColor={{ from: 'color' }}
+      arcLabelsSkipAngle={10}
+      arcLabelsTextColor={{
+          from: 'color',
+          modifiers: [['darker', 2 ]]
+      }}
+      legends={[
+          {
+              anchor: 'bottom',
+              direction: 'row',
+              justify: false,
+              translateX: 0,
+              translateY: 56,
+              itemsSpacing: 0,
+              itemWidth: 100,
+              itemHeight: 18,
+              itemTextColor: '#999',
+              itemDirection: 'left-to-right',
+              itemOpacity: 1,
+              symbolSize: 18,
+              symbolShape: 'circle',
+              effects: [
+                  {
+                      on: 'hover',
+                      style: {itemTextColor: '#000'}
+                  }
+              ]
+          }
+      ]}
+  />
     )
 
     const PieMotivo =() => (
@@ -471,17 +472,19 @@ export default function Dashboard(){
       const data2 = await Promise.all(dataEstadoCivil.map(async (e) => {
         const id = e.tipo_de_estado;
         const label = e.tipo_de_estado;
-        const value = await countClientsbyEstadoCivil(e.id_estado_civil);
+        const value = await countClientsbyMotivo(e.id_estadocivil);
         const color = getRandomColor();
         return { id, label, value, color };
       }));
+      
       const filteredData2 = data2.filter((item) => item.value > 0);
+      console.log(filteredData2)
       setCountEstadoCivil(filteredData2);
 
       const data3 = await Promise.all(dataMotivo.map(async (e) => {
         const id = e.motivo;
         const label = e.motivo;
-        const value = await countClientsbyMotivo(e.id_motivo_prestamo);
+        const value = await countClientsbyMotivo(e.id_motivo);
         const color = getRandomColor();
         return { id, label, value, color };
       }));
@@ -491,7 +494,7 @@ export default function Dashboard(){
       const data4 = await Promise.all(dataNivelEducativo.map(async (e) => {
         const id = e.nivel_educativo;
         const label = e.nivel_educativo;
-        const value = await countClientsbyEducativo(e.id_nivel_educativo);
+        const value = await countClientsbyEducativo(e.id_niveleducativo);
         const color = getRandomColor();
         return { id, label, value, color };
       }));
@@ -526,7 +529,7 @@ export default function Dashboard(){
       const data2 = await Promise.all(dataEstadoCivil.map(async (e) => {
         const id = e.tipo_de_estado;
         const label = e.tipo_de_estado;
-        const value = await countClientsbyEstadoCivilDistrito(e.id_estado_civil, ident);
+        const value = await countClientsbyEstadoCivilDistrito(e.id_estadocivil, ident);
         const color = getRandomColor();
         return { id, label, value, color };
       }));
@@ -577,7 +580,7 @@ export default function Dashboard(){
       const data2 = await Promise.all(dataEstadoCivil.map(async (e) => {
         const id = e.tipo_de_estado;
         const label = e.tipo_de_estado;
-        const value = await countClientsbyEstadoCivilRegion(e.id_estado_civil, ident);
+        const value = await countClientsbyEstadoCivilRegion(e.id_estadocivil, ident);
         const color = getRandomColor();
         return { id, label, value, color };
       }));
@@ -587,7 +590,7 @@ export default function Dashboard(){
       const data3 = await Promise.all(dataMotivo.map(async (e) => {
         const id = e.motivo;
         const label = e.motivo;
-        const value = await countClientsbyMotivoRegion(e.id_motivo_prestamo, ident);
+        const value = await countClientsbyMotivoRegion(e.id_motivo, ident);
         const color = getRandomColor();
         return { id, label, value, color };
       }));
@@ -597,7 +600,7 @@ export default function Dashboard(){
       const data4 = await Promise.all(dataNivelEducativo.map(async (e) => {
         const id = e.nivel_educativo;
         const label = e.nivel_educativo;
-        const value = await countClientsbyEducativoRegion(e.id_nivel_educativo, ident);
+        const value = await countClientsbyEducativoRegion(e.id_niveleducativo, ident);
         const color = getRandomColor();
         return { id, label, value, color };
       }));
@@ -637,26 +640,33 @@ export default function Dashboard(){
 
     const countAllClientsbyDistrito = async (id) => {
       const valor = await fetch(process.env.REACT_APP_API_URL + "/allclientespordistrito/" + id);
+    
       return await valor.json();
     }
 
     const countClientsbyEstadoCivil = async (id) => {
       const valor = await fetch(process.env.REACT_APP_API_URL + "/clientesporestadocivil/" + id);
+
+          console.log('hola',valor);
+          console.log(valor);
       return await valor.json();
     }
 
     const countClientsbyEstadoCivilDistrito = async (id, distrito) => {
       const valor = await fetch(process.env.REACT_APP_API_URL + "/clientesporestadocivildistrito/" + id + "/" + distrito);
+      console.log(id);
       return await valor.json();
     }
 
     const countClientsbyEstadoCivilRegion = async (id, region) => {
       const valor = await fetch(process.env.REACT_APP_API_URL + "/clientesporestadocivilregion/" + id + "/" + region);
+      
       return await valor.json();
     }
 
     const countClientsbyMotivo = async (id) => {
       const valor = await fetch(process.env.REACT_APP_API_URL + "/clientespormotivo/" + id);
+      console.log('hola2',valor);
       return await valor.json();
     }
 
@@ -672,6 +682,7 @@ export default function Dashboard(){
 
     const countClientsbyEducativo = async (id) => {
       const valor = await fetch(process.env.REACT_APP_API_URL + "/clientesporeducativo/" + id);
+      console.log('hola3',valor);
       return await valor.json();
     }
 

@@ -167,20 +167,22 @@ export default function Registro(){
       try {
         // Lee el archivo CSV y conviértelo en un array de objetos
         const csvData = await readFile(file);
-        // Pasar el csvData a dataImport para cambiar los tipos de datos de los campos del cliente
         const changedData = await changeDataType(csvData);
-        
+    
         // Realiza la consulta a la base de datos PostgreSQL con los datos del CSV
-        changedData.forEach(async (e)=>{
+        changedData.forEach(async (e) => {
           await uploadCSVDataToServer(e);
-        })
-
+        });
+    
         console.log('Consulta a la base de datos completada.');
       } catch (error) {
         console.error('Error al procesar el archivo CSV o realizar la consulta a la base de datos:', error);
       }
     }
-
+    
+    // ... Resto de tu código ...
+    
+    
     // Función para leer el archivo CSV y convertirlo en un array de objetos
     function readFile(file) {
       return new Promise((resolve, reject) => {
@@ -198,36 +200,46 @@ export default function Registro(){
       });
     }
 
-    function changeDataType(csvData){
-      const clients = []
-
+    function changeDataType(csvData) {
+      const clients = [];
+    
       csvData.forEach(e => {
-        const fechaoriginal = e.fecha_nacimiento;
-        const partes = fechaoriginal.split('/');
-        const dia = partes[0];
-        const mes = partes[1];
-        const anio = partes[2];
-        
-        const client = {
-          nombre_cliente: e.nombre_cliente,
-          dni: e.dni,
-          fecha_nacimiento: `${anio}-${mes}-${dia}`,
-          cantidad_propiedades: e.cantidad_propiedades,
-          cantidad_hijos: e.cantidad_hijos,
-          genero: JSON.parse(e.genero),
-          id_distrito: dataDistrito[e.id_distrito-1],
-          id_usuario: dataUsuario[e.id_usuario-1],
-          id_estadocivil: dataEstadoCivil[e.id_estadocivil-1],
-          id_niveleducativo: dataNivelEducativo[e.id_niveleducativo-1],
-          salario: e.salario,
-          deudas: e.deudas,
-          id_motivo: dataMotivo[e.id_motivo-1]
+        if (e.fecha_nacimiento) {
+          const fechaoriginal = e.fecha_nacimiento;
+          const partes = fechaoriginal.split('/');
+          if (partes.length === 3) {
+            const dia = partes[0];
+            const mes = partes[1];
+            const anio = partes[2];
+    
+            const client = {
+              nombre_cliente: e.nombre_cliente || '',
+              dni: e.dni || '',
+              fecha_nacimiento: `${anio}-${mes}-${dia}`,
+              cantidad_propiedades: e.cantidad_propiedades || 0,
+              cantidad_hijos: e.cantidad_hijos || 0,
+              genero: JSON.parse(e.genero) || false,
+              id_distrito: dataDistrito[e.id_distrito - 1] || '',
+              id_usuario: dataUsuario[e.id_usuario - 1] || '',
+              id_estadocivil: dataEstadoCivil[e.id_estadocivil - 1] || '',
+              id_niveleducativo: dataNivelEducativo[e.id_niveleducativo - 1] || '',
+              salario: e.salario || 0,
+              deudas: e.deudas || 0,
+              id_motivo: dataMotivo[e.id_motivo - 1] || '',
+            };
+    
+            clients.push(client);
+          } else {
+            console.error(`La fecha de nacimiento está mal formateada: ${e.fecha_nacimiento}`);
+          }
+        } else {
+          console.error('La fecha de nacimiento no está definida para:', e);
         }
-
-        clients.push(client); 
       });
+    console.log('hola')
       return clients;
     }
+    
 
     // Función para realizar la consulta a la base de datos PostgreSQL a través de una solicitud fetch
     async function uploadCSVDataToServer(csvData) {
@@ -266,6 +278,7 @@ export default function Registro(){
         window.location.reload();
       }
     };
+    
 
     const exportClients = async () => {
       let clientstoExport = [];
@@ -340,7 +353,7 @@ export default function Registro(){
 
     const handleDelete = async (id) => {      
       try {
-        await fetch(`http://localhost:4000/cliente/${id}`, {
+        const response = await fetch(process.env.REACT_APP_API_URL +`/cliente/${id}`, {
         method:'DELETE',
         })
         setClientes(clientes.filter(cliente => cliente.id_cliente!== id));
@@ -351,7 +364,7 @@ export default function Registro(){
 
     const handleDeleteAll = async () => {      
       try {
-        await fetch(`http://localhost:4000/clientes/`, {
+        const response = await fetch(process.env.REACT_APP_API_URL +`/clientes/`, {
         method:'DELETE',
         })
         window.location.reload();
